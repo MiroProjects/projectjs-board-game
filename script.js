@@ -1,2 +1,2 @@
-window.onload = CanvasManager.initialize("gameField");
-CanvasManager.createGameField();
+//Start the game
+Game.startGame();
