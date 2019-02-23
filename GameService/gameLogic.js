@@ -15,6 +15,7 @@ Game.initialize = function () {
     FigureManager.setDefaultFontOptions();
     this.statistics = document.getElementById("statistics");
     this.createGameField();
+    this.clickEventFigureDistribution();
 };
 
 //Functions to be called for the start of a new game
@@ -24,7 +25,6 @@ Game.startGame = function(){
     resetPlayers();
     this.currentPlayer = this.playerA;
     this.createGameField();
-    this.figureDistribution();
     createInfoManager();
     InfoManager.addRedSquares();
     changeStatistics(this.currentPlayer);
@@ -175,7 +175,7 @@ var placeFigure = function(square){
     var figure = Game.currentPlayer.heros[0];
     var name = figure.name;
     square.addFigure(figure);
-    GameFieldManager.updateSquare();
+    GameFieldManager.updateSquare(square);
     FigureManager.placeFigure(name, square);
     Game.currentPlayer.heros.shift();
     checkIfAllFiguresArePlaced();
@@ -192,6 +192,6 @@ var checkIfAllFiguresArePlaced = function(){
 };
 
 //Function for the figure distribution
-Game.figureDistribution = function(){
-    FigureManager.addEventListenerToCanvas(figureDistribution);
+Game.clickEventFigureDistribution = function(){
+    FigureManager.addOnClick(figureDistribution);
 };

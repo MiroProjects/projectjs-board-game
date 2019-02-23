@@ -8,7 +8,7 @@ FigureManager.initialize = function(){
 };
 
 //Adds event listener to the canvas
-FigureManager.addEventListenerToCanvas = function(callback){
+FigureManager.addOnClick = function(callback){
     this.canvas.addEventListener("click", function(e){callback(e)});
 };
 
@@ -19,7 +19,7 @@ FigureManager.setDefaultFontOptions = function(){
 };
 
 //Clears all the figures on the FigureManager
-FigureManager.clear = function(){
+FigureManager.clear = function(callback){
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 };
 
