@@ -3,18 +3,32 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title>Board Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <canvas width="765" height="595" id="gameField"></canvas>
-    <div id="statistics"></div>
-    
+    <!-- Container for all the canvas layers -->
+    <div id="canvasContainer">
+        <canvas width="765" height="595" id="gameField"></canvas>
+        <canvas width="765" height="595" id="figureField"></canvas>
+    </div>
+
+    <!-- Container for the information field and the buttons -->
+    <div id="infoContainer">
+        <div id="statistics"></div>
+        <input type="button" value="Start Game" id="startGame">
+    </div>
+
+    <!-- Scripts -->
     <script src="GameService/square.js"></script>
-    <script src="Managers/canvasManager.js"></script>
+    <script src="Managers/GameFieldManager.js"></script>
+    <script src="Managers/FigureManager.js"></script>
+    <script src="Managers/InfoManager.js"></script>
     <script src="GameService/gameLogic.js"></script>
     <script src="Figures/gameFigures.js"></script>
     <script src="script.js"></script>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </body>
 </html>

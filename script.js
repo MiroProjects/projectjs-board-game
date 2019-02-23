@@ -1,2 +1,4 @@
 //Start the game
-Game.startGame();
+Game.initialize();
+var btn = document.getElementById("startGame");
+btn.addEventListener("click", function(){Game.startGame()});
