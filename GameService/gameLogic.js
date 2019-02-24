@@ -15,7 +15,6 @@ Game.initialize = function () {
     FigureManager.setDefaultFontOptions();
     this.statistics = document.getElementById("statistics");
     this.createGameField();
-    //this.clickEventFigureDistribution();
 };
 
 //Functions to be called for the start of a new game
@@ -159,8 +158,7 @@ var changeStatisticsOnDistribution = function(player){
 //Changes the statistics
 var changeStatisticsOnPlay = function(player){
     var text = "";
-    text = `${player.name}'s Turn <br /><ul><li>Attack</li><li>Move</li><li>Heal</li></ul>`;
-
+    text = `${player.name}'s Turn <br /><ul><li id='attack'>Attack</li><li id='move'>Move</li><li id='heal'>Heal</li></ul>`;
     statistics.innerHTML = text;
 };
 
@@ -191,9 +189,9 @@ var figureDistribution = function(e) {
 //Logic for placing the figure on the current position
 var placeFigure = function(square){
     var figure = Game.currentPlayer.heros[0];
+    figure.addPlayer(Game.currentPlayer);
     var name = figure.name;
     square.addFigure(figure);
-    GameFieldManager.updateSquare(square);
     FigureManager.placeFigure(name, square);
     Game.currentPlayer.heros.shift();
     Game.changeTurn();
@@ -219,6 +217,8 @@ var afterFiguresArePlaced = function(){
     FigureManager.removeClickFunction();
     placeAllObstacles();
     changeStatisticsOnPlay(Game.currentPlayer);
+    addOptions();
+    Game.clickEventGamePlay();
 };
 
 //Place all generated obstacles
@@ -231,14 +231,14 @@ var placeAllObstacles = function(){
             return;
         }
 
-        if (GameFieldManager.arrayWithSquares[index].figure) {
+        if (GameFieldManager.arrayWithSquares[index].obstacle) {
             FigureManager.setObstacle(GameFieldManager.arrayWithSquares[index]);
             countObstacles++;
         }
     }
 };
 
-//Function for the figure distribution
+//Function that adds event listener to the FigureManager for figure distribution
 Game.clickEventFigureDistribution = function(){
     FigureManager.addAFunctionToTheEventListener(figureDistribution);
     FigureManager.addOnClickEvent();
@@ -265,10 +265,78 @@ var generateObstacles = function(){
 
     //Generate a number from 1 to 5
     var numberOfObstacles = randomInteger(1, 6);
+    var obstacle = {name: "OBSTACLE"};
     for (let index = 0; index < numberOfObstacles; index++) {
         var freePosition = getAFreeRandomPosition(positions);
         positions.push(freePosition);
-        GameFieldManager.arrayWithSquares[freePosition].figure = "OBSTACLE";
+        GameFieldManager.arrayWithSquares[freePosition].addObstacle(obstacle);
     }
     return numberOfObstacles;
+};
+
+//Function that sets player's choice
+var makeChoice = function (playerChoice) {
+    if (Game.currentPlayer.choice) {
+        alert(`You have made your choice: ${Game.currentPlayer.choice}`);
+        return;
+    }
+
+    alert(`Your choice: ${playerChoice}`);
+    Game.currentPlayer.choice = playerChoice;
+};
+
+//Add <li> click options
+var addOptions = function(){
+    var optionAttack = document.getElementById("attack");
+    var optionMove = document.getElementById("move");
+    var optionHeal = document.getElementById("heal");
+
+    optionAttack.addEventListener("click", () => {makeChoice("Attack")});
+    optionMove.addEventListener("click", () => {makeChoice("Move")});
+    optionHeal.addEventListener("click", () => {makeChoice("Heal")});
+};
+
+//The main game
+var gamePlay = function(e) {
+    var position = {
+        x: e.clientX,
+        y: e.clientY
+    };
+
+    var boardSquares = GameFieldManager.arrayWithSquares;
+
+    for (let index = 0; index < boardSquares.length; index++) {
+        var square = boardSquares[index];
+        if (square.isIntersected(position)) {
+            if (square.figure && square.figure.player == Game.currentPlayer) {
+                if (!Game.currentPlayer.choice) {
+                    alert("First make a choice!");
+                    return;
+                }
+                
+                if (Game.currentPlayer.choice == "Attack") {
+                    alert("Attack ...");
+                    //Logic for attacking
+                    return;
+                }
+
+                if (Game.currentPlayer.choice == "Move") {
+                    alert("Move ...");
+                    //Logic for moving
+                    return;
+                }
+
+                if (Game.currentPlayer.choice == "Heal") {
+                    alert("Heal ...");
+                     //Logic for healing
+                }
+            }
+        }
+    }
+};
+
+//Function that adds event listener to the FigureManager for the main game play
+Game.clickEventGamePlay = function(){
+    FigureManager.addAFunctionToTheEventListener(gamePlay);
+    FigureManager.addOnClickEvent();
 };

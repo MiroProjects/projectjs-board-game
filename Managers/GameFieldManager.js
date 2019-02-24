@@ -13,16 +13,6 @@ GameFieldManager.addSquareToArray = function(square){
     this.arrayWithSquares.push(square);
 };
 
-//Updates a square
-GameFieldManager.updateSquare = function(square){
-    for (let index = 0; index < GameFieldManager.arrayWithSquares.length; index++) {
-        if (GameFieldManager.arrayWithSquares[index] === square) {
-            GameFieldManager.arrayWithSquares[index] = square;
-            return;
-        }     
-    }
-};
-
 //Resets the whole game field
 GameFieldManager.reset = function(){
     this.arrayWithSquares = [];

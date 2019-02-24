@@ -20,3 +20,7 @@ Figures.getNewElf = function(){
 Figures.getNewDwarf = function(){
     return new Hero("D", 6, 2, 12, 2, 2);
 };
+
+Hero.prototype.addPlayer = function(player){
+    this.player = player;
+};

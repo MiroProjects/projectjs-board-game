@@ -34,7 +34,7 @@ FigureManager.setDefaultFontOptions = function(){
 };
 
 //Clears all the figures on the FigureManager
-FigureManager.clear = function(callback){
+FigureManager.clear = function(){
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 };
 

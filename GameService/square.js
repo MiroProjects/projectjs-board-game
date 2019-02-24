@@ -16,3 +16,7 @@ Square.prototype.isIntersected = function(position) {
     return (this.x <= position.x && position.x <= this.x + this.width &&
         this.y <= position.y && position.y <= this.y + this.height);
 };
+
+Square.prototype.addObstacle = function(obstacle){
+    this.obstacle = obstacle;
+};
