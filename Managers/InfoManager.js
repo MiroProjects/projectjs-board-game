@@ -21,6 +21,7 @@ InfoManager.createInfoCanvas = function (top) {
 InfoManager.removeInfoCanvas = function(){
     var containerDiv = document.getElementById("canvasContainer");
     containerDiv.removeChild(this.canvas);
+    InfoManager.canvas = null;
 };
 
 //Initialize function for the main properties

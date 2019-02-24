@@ -15,19 +15,29 @@ Game.initialize = function () {
     FigureManager.setDefaultFontOptions();
     this.statistics = document.getElementById("statistics");
     this.createGameField();
-    this.clickEventFigureDistribution();
+    //this.clickEventFigureDistribution();
 };
 
 //Functions to be called for the start of a new game
 Game.startGame = function(){
+    FigureManager.removeClickFunction();
     GameFieldManager.reset();
     FigureManager.clear();
+    removeInfoManager();
     resetPlayers();
     this.currentPlayer = this.playerA;
+    this.clickEventFigureDistribution();
     this.createGameField();
     createInfoManager();
     InfoManager.addRedSquares();
     changeStatistics(this.currentPlayer);
+};
+
+//If info manager canvas exists remove it 
+var removeInfoManager = function(){
+    if (InfoManager.canvas) {
+        InfoManager.removeInfoCanvas();
+    }
 };
 
 //Resets the two player objects
@@ -178,20 +188,31 @@ var placeFigure = function(square){
     GameFieldManager.updateSquare(square);
     FigureManager.placeFigure(name, square);
     Game.currentPlayer.heros.shift();
-    checkIfAllFiguresArePlaced();
     Game.changeTurn();
+    var arePlaced = checkIfAllFiguresArePlaced();
+    if (arePlaced) {
+        afterFiguresArePlaces();
+        return;
+    }
     changeInfoManagerPosition();
 };
 
 //Checks if all figures are placed
 var checkIfAllFiguresArePlaced = function(){
     if (Game.playerA.heros.length == 0 && Game.playerB.heros.length == 0) {
-        InfoManager.removeInfoCanvas();
-        //Logic for another clicking...
+        return true;
     }
+    return false;
+};
+
+//Logic after all figures are placed
+var afterFiguresArePlaces = function(){
+    removeInfoManager();
+    FigureManager.removeClickFunction();
 };
 
 //Function for the figure distribution
 Game.clickEventFigureDistribution = function(){
-    FigureManager.addOnClick(figureDistribution);
+    FigureManager.addAFunctionToTheEventListener(figureDistribution);
+    FigureManager.addOnClickEvent();
 };

@@ -7,9 +7,24 @@ FigureManager.initialize = function(){
     this.context = this.canvas.getContext("2d");
 };
 
-//Adds event listener to the canvas
-FigureManager.addOnClick = function(callback){
-    this.canvas.addEventListener("click", function(e){callback(e)});
+//Function for adding a function reference to the function which is going to be called in the event listener
+FigureManager.addAFunctionToTheEventListener = function(callback){
+    FigureManager.reference = callback;
+};
+
+//Function used in the event listener
+var click = function(e){
+    FigureManager.reference(e);
+};
+
+//Adds event listener and attaches the given function in (addAFunctionToTheEventListener()) as a callback in the event listener
+FigureManager.addOnClickEvent = function(){
+    this.canvas.addEventListener("click", click);
+};
+
+//Removes an event listeners
+FigureManager.removeClickFunction = function(){
+    this.canvas.removeEventListener("click", click);
 };
 
 //Sets the default font options
