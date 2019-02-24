@@ -10,7 +10,7 @@ div#canvasContainer{
 div#infoContainer{
     position: relative;
     left: 765px;
-    width: 600px;
+    width: 650px;
 }
 
 canvas#gameField, canvas#figureField, canvas#infoField{

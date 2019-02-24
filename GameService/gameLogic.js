@@ -30,7 +30,7 @@ Game.startGame = function(){
     this.createGameField();
     createInfoManager();
     InfoManager.addRedSquares();
-    changeStatistics(this.currentPlayer);
+    changeStatisticsOnDistribution(this.currentPlayer);
 };
 
 //If info manager canvas exists remove it 
@@ -142,16 +142,24 @@ Game.changeTurn = function(){
         this.currentPlayer = this.playerA;
     }
 
-    changeStatistics(this.currentPlayer);
+    changeStatisticsOnDistribution(this.currentPlayer);
 };
 
 //Changes the statistics
-var changeStatistics = function(player){
+var changeStatisticsOnDistribution = function(player){
     var text = "";
     text = `${player.name}'s Turn <br /><br /> Avaliable Heroes: <br />`;
     for (let index = 0; index < player.heros.length; index++) {
         text += ` ${player.heros[index].name} `;     
     }
+
+    statistics.innerHTML = text;
+};
+
+//Changes the statistics
+var changeStatisticsOnPlay = function(player){
+    var text = "";
+    text = `${player.name}'s Turn <br /><ul><li>Attack</li><li>Move</li><li>Heal</li></ul>`;
 
     statistics.innerHTML = text;
 };
@@ -191,7 +199,7 @@ var placeFigure = function(square){
     Game.changeTurn();
     var arePlaced = checkIfAllFiguresArePlaced();
     if (arePlaced) {
-        afterFiguresArePlaces();
+        afterFiguresArePlaced();
         return;
     }
     changeInfoManagerPosition();
@@ -206,13 +214,61 @@ var checkIfAllFiguresArePlaced = function(){
 };
 
 //Logic after all figures are placed
-var afterFiguresArePlaces = function(){
+var afterFiguresArePlaced = function(){
     removeInfoManager();
     FigureManager.removeClickFunction();
+    placeAllObstacles();
+    changeStatisticsOnPlay(Game.currentPlayer);
+};
+
+//Place all generated obstacles
+var placeAllObstacles = function(){
+    var numberOfGeneratedObstacles = generateObstacles();
+    var countObstacles = 0;
+    for (let index = 18; index < 45; index++) {
+        //If all generated obstacles are placed then there is no need to check the other squares
+        if (countObstacles == numberOfGeneratedObstacles) {
+            return;
+        }
+
+        if (GameFieldManager.arrayWithSquares[index].figure) {
+            FigureManager.setObstacle(GameFieldManager.arrayWithSquares[index]);
+            countObstacles++;
+        }
+    }
 };
 
 //Function for the figure distribution
 Game.clickEventFigureDistribution = function(){
     FigureManager.addAFunctionToTheEventListener(figureDistribution);
     FigureManager.addOnClickEvent();
+};
+
+//Generate a random number
+var randomInteger = function(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+};
+
+//Get a free random position
+var getAFreeRandomPosition = function(positions){
+    //Generate a number from 18 to 44 - these are the battlefields' poitions
+    var position = randomInteger(18, 45);
+    if (positions.length > 0 && positions.includes(position)) {
+        return getAFreeRandomPosition(positions);
+    }
+    return position;
+};
+
+//Generate obstacles
+var generateObstacles = function(){
+    var positions = [];
+
+    //Generate a number from 1 to 5
+    var numberOfObstacles = randomInteger(1, 6);
+    for (let index = 0; index < numberOfObstacles; index++) {
+        var freePosition = getAFreeRandomPosition(positions);
+        positions.push(freePosition);
+        GameFieldManager.arrayWithSquares[freePosition].figure = "OBSTACLE";
+    }
+    return numberOfObstacles;
 };

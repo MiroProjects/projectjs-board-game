@@ -42,3 +42,10 @@ FigureManager.clear = function(callback){
 FigureManager.placeFigure = function(name, square){
     this.context.fillText(name, square.x + 25, square.y + 55);
 };
+
+//Sets the style of a square with an obstacle
+FigureManager.setObstacle = function(square){
+    this.context.beginPath();
+    this.context.rect(square.x, square.y, square.width, square.height);
+    this.context.fill();
+};
