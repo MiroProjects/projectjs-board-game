@@ -2,12 +2,12 @@
 var InfoManager = new Object();
 
 //Creates canvas dynamically
-InfoManager.createInfoCanvas = function (top) {
+InfoManager.createInfoCanvas = function (width, height, top = 0) {
     var canvas = document.createElement('canvas');
 
     canvas.id = "infoField";
-    canvas.width = 765;
-    canvas.height = 425;
+    canvas.width = width;
+    canvas.height = height;
     canvas.style.zIndex = 3;
     canvas.style.position = "absolute";
     canvas.style.left = 0;
@@ -55,4 +55,25 @@ InfoManager.addRedSquares = function(){
 var setStyleForRedSquares = function(){
     InfoManager.context.fillStyle = "rgba(255, 51, 51, 0.5)";
     InfoManager.context.font = "50px Arial";
+};
+
+//Adds onClick event
+InfoManager.addOnClickEvent = function(callback){
+    InfoManager.canvas.addEventListener("click", function(e){ callback(e); });
+};
+
+//Information for the info squares for the moves
+InfoManager.addMoveInfo = function(square){
+    InfoManager.context.fillStyle = "white";
+    InfoManager.context.font = "50px Arial";
+    InfoManager.context.beginPath();
+    InfoManager.context.rect(square.x, square.y, 85, 85);
+    InfoManager.context.fill();
+    InfoManager.context.fillStyle = "black";
+    InfoManager.context.fillText("M", square.x + 25, square.y + 55);
+};
+
+//Function for clearing the field
+InfoManager.clearField = function(){
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 };

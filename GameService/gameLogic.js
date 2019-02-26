@@ -27,7 +27,7 @@ Game.startGame = function(){
     this.currentPlayer = this.playerA;
     this.clickEventFigureDistribution();
     this.createGameField();
-    createInfoManager();
+    createInfoManager(765, 425, 170);
     InfoManager.addRedSquares();
     changeStatisticsOnDistribution(this.currentPlayer);
 };
@@ -48,8 +48,8 @@ var resetPlayers = function(){
 };
 
 //Creates and initializes an InfoManager
-var createInfoManager = function () {
-    InfoManager.createInfoCanvas(170);
+var createInfoManager = function (width, height, top) {
+    InfoManager.createInfoCanvas(width, height, top);
     InfoManager.initialize();
 };
 
@@ -140,8 +140,6 @@ Game.changeTurn = function(){
     else if (this.currentPlayer == this.playerB) {
         this.currentPlayer = this.playerA;
     }
-
-    changeStatisticsOnDistribution(this.currentPlayer);
 };
 
 //Changes the statistics
@@ -195,6 +193,7 @@ var placeFigure = function(square){
     FigureManager.placeFigure(name, square);
     Game.currentPlayer.heros.shift();
     Game.changeTurn();
+    changeStatisticsOnDistribution(Game.currentPlayer);
     var arePlaced = checkIfAllFiguresArePlaced();
     if (arePlaced) {
         afterFiguresArePlaced();
@@ -314,25 +313,111 @@ var gamePlay = function(e) {
                     return;
                 }
                 
+                createInfoManager(765, 595);
+                Game.clickedSquare = square;
                 if (Game.currentPlayer.choice == "Attack") {
                     alert("Attack ...");
+                    performNextPlayerMove();
                     //Logic for attacking
                     return;
                 }
 
                 if (Game.currentPlayer.choice == "Move") {
-                    alert("Move ...");
-                    //Logic for moving
+                    showMoves(square);
+                    //Event for making the move
+                    InfoManager.addOnClickEvent(makeMove);
                     return;
                 }
 
                 if (Game.currentPlayer.choice == "Heal") {
                     alert("Heal ...");
+                    performNextPlayerMove();
                      //Logic for healing
                 }
             }
         }
     }
+};
+
+//Perform a move
+var makeMove = function(e){
+    var position = {
+        x: e.clientX,
+        y: e.clientY
+    };
+    var boardSquares = GameFieldManager.arrayWithSquares;
+    for (let index = 0; index < boardSquares.length; index++) {
+        if (boardSquares[index].isIntersected(position)) {
+            if (boardSquares[index].figure) {
+                return;
+            }
+
+            if (boardSquares[index].obstacle) {
+                return;
+            }
+            
+            var row = boardSquares[index].row;
+            var col = boardSquares[index].col;
+            if (!checkIfSquareIsInRadius(row, col, Game.clickedSquare)) {
+                return;
+            }
+
+            boardSquares[index].figure = Game.clickedSquare.figure;
+            Game.clickedSquare.figure = null;
+            break;
+        }       
+    }
+    
+    performNextPlayerMove();
+};
+
+var performNextPlayerMove = function(){
+    removeInfoManager();
+    Game.currentPlayer.choice = null;
+    Game.changeTurn();
+    changeStatisticsOnPlay(Game.currentPlayer);
+    resetFigureField();
+    addOptions();
+};
+//Reset all the figure manager field
+var resetFigureField = function(){
+    FigureManager.clear();
+    var boardSquares = GameFieldManager.arrayWithSquares;
+    for (let index = 0; index < boardSquares.length; index++) {
+        if (boardSquares[index].figure) {
+            FigureManager.placeFigure(boardSquares[index].figure.name, boardSquares[index]);
+            continue;
+        }
+
+        if (boardSquares[index].obstacle) {
+            FigureManager.setObstacle(boardSquares[index]);
+        }
+    }
+};
+
+//Function that displays the possible moves for a figure
+var showMoves = function(square){
+    var boardSquares = GameFieldManager.arrayWithSquares;
+    for (let index = 0; index < boardSquares.length; index++) {
+        var row = boardSquares[index].row;
+        var col = boardSquares[index].col;
+
+        var check = checkIfSquareIsInRadius(row, col, square);
+        if (check) {
+            InfoManager.addMoveInfo(boardSquares[index]);
+        }
+    }
+};
+
+//Function that checks if a square is in the figure's radius
+var checkIfSquareIsInRadius = function(row, col, square){
+    if (row == square.row && col == square.col) {
+        return false;
+    }
+    var a = Math.pow(row - square.row, 2);
+    var b = Math.pow(col - square.col, 2);
+    var c = Math.pow(square.figure.speed, 2);
+    return (a + b) <= c;
 };
 
 //Function that adds event listener to the FigureManager for the main game play
