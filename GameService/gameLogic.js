@@ -409,7 +409,33 @@ var makeAttack = function(e) {
                     break;
                 }
 
-                square.figure.health =  square.figure.armor - Game.clickedSquare.figure.attack;
+                if (square.figure.player == Game.currentPlayer) {
+                    alert("You cannot attack your figures!");
+                    return;
+                }
+                
+                //Generate a number from 1 to 6
+                var die1 = randomInteger(1, 7);
+                var die2 = randomInteger(1, 7);
+                var die3 = randomInteger(1, 7);
+                var diceSum = die1 + die2 + die3;
+                var health = square.figure.health;
+                if (diceSum == health) {
+                    alert("Attack was unseccessfull");
+                    return;
+                }
+
+                var attack =  Game.clickedSquare.figure.attack - square.figure.armor;
+                if (diceSum == 3) {
+                    var attack = Math.round(attack / 2);
+                    square.figure.health -= attack;
+                    alert("Attack was halved");
+                }
+                else{
+                    square.figure.health -= attack;
+                }
+
+                alert(`Player: ${Game.currentPlayer.name} attacked the figure: ${square.figure.name} with ${Game.clickedSquare.figure.name} and the figure lost ${attack} points. Left health: ${square.figure.health}`);
                 if (square.figure.health <= 0) {
                     square.figure = null;
                 }
