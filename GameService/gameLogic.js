@@ -314,11 +314,11 @@ var gamePlay = function(e) {
                 }
                 
                 createInfoManager(765, 595);
+                //The clicked figure
                 Game.clickedSquare = square;
                 if (Game.currentPlayer.choice == "Attack") {
-                    alert("Attack ...");
-                    performNextPlayerMove();
-                    //Logic for attacking
+                    //Event for making the attack
+                    InfoManager.addOnClickEvent(makeAttack);
                     return;
                 }
 
@@ -331,7 +331,6 @@ var gamePlay = function(e) {
 
                 if (Game.currentPlayer.choice == "Heal") {
                     alert("Heal ...");
-                    performNextPlayerMove();
                      //Logic for healing
                 }
             }
@@ -368,10 +367,10 @@ var makeMove = function(e){
         }       
     }
     
-    performNextPlayerMove();
+    resetGameBoardForNextPlayer();
 };
 
-var performNextPlayerMove = function(){
+var resetGameBoardForNextPlayer = function(){
     removeInfoManager();
     Game.currentPlayer.choice = null;
     Game.changeTurn();
@@ -379,6 +378,49 @@ var performNextPlayerMove = function(){
     resetFigureField();
     addOptions();
 };
+
+var selectAFigure = function(){
+    Game.selected
+}
+//Perform an attack
+var makeAttack = function(e) {
+    var position = {
+        x: e.clientX,
+        y: e.clientY
+    };
+
+    var boardSquares = GameFieldManager.arrayWithSquares;
+    //Find the selected square to perform the attack
+    for (let index = 0; index < boardSquares.length; index++) {
+        var square = boardSquares[index];
+        if (square.isIntersected(position)) {
+            //If it is empty square do nothing
+            if (square.figure == null && square.obstacle == null) {
+                return;
+            }
+    
+            var distance = Game.clickedSquare.figure.attackingSquares;
+            var distanceWidth = Math.abs(square.row - Game.clickedSquare.row);
+            var distanceHeight = Math.abs(square.col - Game.clickedSquare.col);
+    
+            if ((distanceWidth == distance) || (distanceHeight == distance)) {
+                if (square.obstacle) {
+                    square.obstacle = null;
+                    break;
+                }
+
+                square.figure.health =  square.figure.armor - Game.clickedSquare.figure.attack;
+                if (square.figure.health <= 0) {
+                    square.figure = null;
+                }
+            }
+            break;
+        }
+    }
+
+    resetGameBoardForNextPlayer();
+};
+
 //Reset all the figure manager field
 var resetFigureField = function(){
     FigureManager.clear();
