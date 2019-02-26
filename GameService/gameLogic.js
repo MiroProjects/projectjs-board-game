@@ -330,8 +330,7 @@ var gamePlay = function(e) {
                 }
 
                 if (Game.currentPlayer.choice == "Heal") {
-                    alert("Heal ...");
-                     //Logic for healing
+                    healAFigure();
                 }
             }
         }
@@ -370,6 +369,7 @@ var makeMove = function(e){
     resetGameBoardForNextPlayer();
 };
 
+//Calls the main function for reseting the board for the next player
 var resetGameBoardForNextPlayer = function(){
     removeInfoManager();
     Game.currentPlayer.choice = null;
@@ -379,9 +379,16 @@ var resetGameBoardForNextPlayer = function(){
     addOptions();
 };
 
-var selectAFigure = function(){
-    Game.selected
-}
+//Function for healing a figure
+var healAFigure = function () {
+    //Generate a number from 1 to 6
+    var die = randomInteger(1, 7);
+    Game.clickedSquare.figure.healt += die;
+    alert(`Player: ${Game.currentPlayer.name} healed his figure: ${Game.clickedSquare.figure.name} with ${die} health. Current figure's health is: ${Game.clickedSquare.figure.health}`);
+    //Logic for new turn
+    resetGameBoardForNextPlayer();
+};
+
 //Perform an attack
 var makeAttack = function(e) {
     var position = {
