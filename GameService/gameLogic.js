@@ -15,6 +15,9 @@ Game.initialize = function () {
     FigureManager.setDefaultFontOptions();
     this.statistics = document.getElementById("statistics");
     this.createGameField();
+    Game.rounds = 0;
+    Game.destroyedPlayerAFigures = [];
+    Game.destroyedPlayerBFigures = [];
 };
 
 //Functions to be called for the start of a new game
@@ -243,12 +246,12 @@ Game.clickEventFigureDistribution = function(){
     FigureManager.addOnClickEvent();
 };
 
-//Generate a random number
+//Generates a random number
 var randomInteger = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 };
 
-//Get a free random position
+//Gets a free random position from the given array
 var getAFreeRandomPosition = function(positions){
     //Generate a number from 18 to 44 - these are the battlefields' poitions
     var position = randomInteger(18, 45);
@@ -314,8 +317,10 @@ var gamePlay = function(e) {
                 }
                 
                 createInfoManager(765, 595);
-                //The clicked figure
+                //The clicked figure from the FigureManager
                 Game.clickedSquare = square;
+                //Count the rounds
+                Game.rounds++;
                 if (Game.currentPlayer.choice == "Attack") {
                     //Event for making the attack
                     InfoManager.addOnClickEvent(makeAttack);
@@ -369,7 +374,7 @@ var makeMove = function(e){
     resetGameBoardForNextPlayer();
 };
 
-//Calls the main function for reseting the board for the next player
+//Calls the main functions for reseting the board for the next player
 var resetGameBoardForNextPlayer = function(){
     removeInfoManager();
     Game.currentPlayer.choice = null;
@@ -382,10 +387,18 @@ var resetGameBoardForNextPlayer = function(){
 //Function for healing a figure
 var healAFigure = function () {
     //Generate a number from 1 to 6
+    var heal = randomInteger(1, 7);
+    Game.clickedSquare.figure.healt += heal;
+    alert(`Player: ${Game.currentPlayer.name} healed his figure: ${Game.clickedSquare.figure.name} with ${heal} health. Current figure's health is: ${Game.clickedSquare.figure.health}`);
+
     var die = randomInteger(1, 7);
-    Game.clickedSquare.figure.healt += die;
-    alert(`Player: ${Game.currentPlayer.name} healed his figure: ${Game.clickedSquare.figure.name} with ${die} health. Current figure's health is: ${Game.clickedSquare.figure.health}`);
-    //Logic for new turn
+    if (die % 2 != 0) {
+        alert("You won another turn!");
+        removeInfoManager();
+        Game.currentPlayer.choice = null;
+        return;
+    }
+
     resetGameBoardForNextPlayer();
 };
 
@@ -403,22 +416,32 @@ var makeAttack = function(e) {
         if (square.isIntersected(position)) {
             //If it is empty square do nothing
             if (square.figure == null && square.obstacle == null) {
-                return;
+                alert("Attack failed the target is neither figure nor obstacle!");
+                break;
             }
     
+            //Calc the distance to the figure
             var distance = Game.clickedSquare.figure.attackingSquares;
             var distanceWidth = Math.abs(square.row - Game.clickedSquare.row);
             var distanceHeight = Math.abs(square.col - Game.clickedSquare.col);
     
             if ((distanceWidth == distance) || (distanceHeight == distance)) {
+                //If it is on ots diagonal then an attack cannot be performed
+                if (excludeDiagonalAttack(square)) {
+                    alert("The figure cannot attack from this position!");
+                    break;
+                }
+
+                //If it is an obtsacle then destroy it
                 if (square.obstacle) {
                     square.obstacle = null;
                     break;
                 }
 
+                //If the figures are your then you cannot make the attack
                 if (square.figure.player == Game.currentPlayer) {
                     alert("You cannot attack your figures!");
-                    return;
+                    break;
                 }
                 
                 //Generate a number from 1 to 6
@@ -428,8 +451,8 @@ var makeAttack = function(e) {
                 var diceSum = die1 + die2 + die3;
                 var health = square.figure.health;
                 if (diceSum == health) {
-                    alert("Attack was unseccessfull");
-                    return;
+                    alert("Attack was unsuccessfull");
+                    break;
                 }
 
                 var attack =  Game.clickedSquare.figure.attack - square.figure.armor;
@@ -444,9 +467,27 @@ var makeAttack = function(e) {
 
                 alert(`Player: ${Game.currentPlayer.name} attacked the figure: ${square.figure.name} with ${Game.clickedSquare.figure.name} and the figure lost ${attack} points. Left health: ${square.figure.health}`);
                 if (square.figure.health <= 0) {
+                    if (Game.currentPlayer == Game.playerA) {
+                        Game.destroyedPlayerBFigures.push(square.figure);
+                    }
+                    else if(Game.currentPlayer == Game.playerB){
+                        Game.destroyedPlayerAFigures.push(square.figure);
+                    }
                     square.figure = null;
                 }
+                
+                if (isEndOfGame()) {
+                    alert("This is the end of the game");
+                    resetFigureField();
+                    removeInfoManager();
+                    createInfoManager(765, 595);
+                    endOfGameStatistics();
+                    return;
+                }
+
+                break;
             }
+            alert("The figure cannot attack from this position!");
             break;
         }
     }
@@ -489,14 +530,120 @@ var checkIfSquareIsInRadius = function(row, col, square){
     if (row == square.row && col == square.col) {
         return false;
     }
+
+    if(square.figure.name.startsWith("E")){
+        if (excludeCornersForElfFigure(row, col, square)) {
+            return
+        }
+    }
     var a = Math.pow(row - square.row, 2);
     var b = Math.pow(col - square.col, 2);
     var c = Math.pow(square.figure.speed, 2);
     return (a + b) <= c;
 };
 
+//Excludes diagonal attacks
+var excludeDiagonalAttack = function(square){
+    var attackRadius = Game.clickedSquare.figure.attackingSquares;
+    var rowToExcludeX1 = Game.clickedSquare.row - attackRadius;
+    var colToExcludeY1 = Game.clickedSquare.col - attackRadius;
+    var rowToExcludeX2 = Game.clickedSquare.row + attackRadius;
+    var colToExcludeY2 = Game.clickedSquare.col + attackRadius;
+    if (square.row == rowToExcludeX1 && square.col == colToExcludeY1) {
+        return true;
+    }
+
+    if (square.row == rowToExcludeX1 && square.col == colToExcludeY2) {
+        return true;
+    }
+
+    if (square.row == rowToExcludeX2 && square.col == colToExcludeY1) {
+        return true;
+    }
+
+    if (square.row == rowToExcludeX2 && square.col == colToExcludeY2) {
+        return true;
+    }
+    return false;
+};
+
+//Function that excludes the corners for the elf figure
+var excludeCornersForElfFigure = function(row, col, square){
+    var rowToExcludeX1 = square.row - 2;
+    var colToExcludeY1 = square.col - 2;
+    var rowToExcludeX2 = square.row + 2;
+    var colToExcludeY2 = square.col + 2;
+    if (row == rowToExcludeX1 && col == colToExcludeY1) {
+        return true;
+    }
+
+    if (row == rowToExcludeX1 && col == colToExcludeY2) {
+        return true;
+    }
+
+    if (row == rowToExcludeX2 && col == colToExcludeY1) {
+        return true;
+    }
+
+    if (row == rowToExcludeX2 && col == colToExcludeY2) {
+        return true;
+    }
+    return false;
+};
+
 //Function that adds event listener to the FigureManager for the main game play
 Game.clickEventGamePlay = function(){
     FigureManager.addAFunctionToTheEventListener(gamePlay);
     FigureManager.addOnClickEvent();
+};
+
+//Calculate the points of the winner based on the health of his alive heroes
+var calcPoints = function(){
+    boardSquares = GameFieldManager.arrayWithSquares;
+    var points = 0
+    for (let index = 0; index < boardSquares.length; index++) {
+        if (boardSquares[index].figure) {
+            points += boardSquares[index].figure.health;
+        }
+    }
+    return points;
+};
+
+//Change tha statistics for the end of the game
+var endOfGameStatistics = function(){
+    var text = "";
+    text += `Winner's points: ${calcPoints()}\n`;
+    text += `Game rounds: ${Game.rounds}\n`;
+    text += `Player A's detrsoyed figures: `;
+    for (let index = 0; index < Game.destroyedPlayerAFigures.length; index++) {
+        text += `${Game.destroyedPlayerAFigures[index].name}|`;        
+    }
+    text += `\nPlayer B's detrsoyed figures: `;
+    for (let index = 0; index < Game.destroyedPlayerBFigures.length; index++) {
+        text += `${Game.destroyedPlayerAFigures[index].name}|`;        
+    }
+    statistics.innerHTML = text;
+};
+
+//Checks for end of the game
+var isEndOfGame = function(){
+    var boardSquares = GameFieldManager.arrayWithSquares;
+    var isPlayerAAlive = false;
+    var isPlayerBAlive = false;
+
+    for (let index = 0; index < boardSquares.length; index++) {
+        if (boardSquares[index].figure) {
+            if (boardSquares[index].figure.player == Game.playerA) {
+                isPlayerAAlive = true;
+            }
+            else{
+                isPlayerBAlive = true;
+            }
+        }
+
+        if (isPlayerAAlive && isPlayerBAlive) {
+            return false;
+        }
+    }
+    return true;
 };
