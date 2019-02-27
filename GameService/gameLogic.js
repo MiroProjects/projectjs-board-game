@@ -22,6 +22,7 @@ Game.initialize = function () {
 
 //Functions to be called for the start of a new game
 Game.startGame = function(){
+    statistics.style["height"] = "250px";
     FigureManager.removeClickFunction();
     GameFieldManager.reset();
     FigureManager.clear();
@@ -148,7 +149,7 @@ Game.changeTurn = function(){
 //Changes the statistics
 var changeStatisticsOnDistribution = function(player){
     var text = "";
-    text = `${player.name}'s Turn <br /><br /> Avaliable Heroes: <br />`;
+    text = `${player.name}'s Turn <br /><br /> Avaliable Heroes <br />`;
     for (let index = 0; index < player.heros.length; index++) {
         text += ` ${player.heros[index].name} `;     
     }
@@ -221,6 +222,8 @@ var afterFiguresArePlaced = function(){
     changeStatisticsOnPlay(Game.currentPlayer);
     addOptions();
     Game.clickEventGamePlay();
+    statistics.style["height"] = "300px";
+    statistics.style["paddingTop"] = "80px";
 };
 
 //Place all generated obstacles
@@ -323,6 +326,7 @@ var gamePlay = function(e) {
                 Game.rounds++;
                 if (Game.currentPlayer.choice == "Attack") {
                     //Event for making the attack
+                    FigureManager.changeSelectedSquareColor(square);
                     InfoManager.addOnClickEvent(makeAttack);
                     return;
                 }
@@ -330,6 +334,7 @@ var gamePlay = function(e) {
                 if (Game.currentPlayer.choice == "Move") {
                     showMoves(square);
                     //Event for making the move
+                    FigureManager.changeSelectedSquareColor(square);
                     InfoManager.addOnClickEvent(makeMove);
                     return;
                 }
@@ -387,9 +392,9 @@ var resetGameBoardForNextPlayer = function(){
 //Function for healing a figure
 var healAFigure = function () {
     //Generate a number from 1 to 6
-    var heal = randomInteger(1, 7);
-    Game.clickedSquare.figure.healt += heal;
-    alert(`Player: ${Game.currentPlayer.name} healed his figure: ${Game.clickedSquare.figure.name} with ${heal} health. Current figure's health is: ${Game.clickedSquare.figure.health}`);
+    var healingNumber = randomInteger(1, 7);
+    Game.clickedSquare.figure.health += healingNumber;
+    alert(`Player: ${Game.currentPlayer.name} healed his figure: ${Game.clickedSquare.figure.name} with ${healingNumber} health. Current figure's health is: ${Game.clickedSquare.figure.health}`);
 
     var die = randomInteger(1, 7);
     if (die % 2 != 0) {
@@ -424,8 +429,9 @@ var makeAttack = function(e) {
             var distance = Game.clickedSquare.figure.attackingSquares;
             var distanceWidth = Math.abs(square.row - Game.clickedSquare.row);
             var distanceHeight = Math.abs(square.col - Game.clickedSquare.col);
-    
-            if ((distanceWidth == distance) || (distanceHeight == distance)) {
+            if (((distanceWidth == distance) && (distanceHeight == 0)) || 
+            ((distanceHeight == distance) && (distanceWidth == 0))) {
+                
                 //If it is on ots diagonal then an attack cannot be performed
                 if (excludeDiagonalAttack(square)) {
                     alert("The figure cannot attack from this position!");
@@ -612,16 +618,25 @@ var calcPoints = function(){
 //Change tha statistics for the end of the game
 var endOfGameStatistics = function(){
     var text = "";
-    text += `Winner's points: ${calcPoints()}\n`;
-    text += `Game rounds: ${Game.rounds}\n`;
-    text += `Player A's detrsoyed figures: `;
-    for (let index = 0; index < Game.destroyedPlayerAFigures.length; index++) {
-        text += `${Game.destroyedPlayerAFigures[index].name}|`;        
+    text += `<p class='endGameStatistics'>Winner's points ${calcPoints()}</p>`;
+    text += `<p class='endGameStatistics'>Game rounds ${Game.rounds}</p>`;
+    text += `<p class='endGameStatistics'>Player A's destroyed figures</p>`;
+    for (let index = 0; index < Game.destroyedPlayerAFigures.length; index++) { 
+        if (index == Game.destroyedPlayerAFigures.length - 1) {
+            text += `<span>${Game.destroyedPlayerAFigures[index].name}<span>`;
+            break;
+        }
+        text += `<span>${Game.destroyedPlayerAFigures[index].name}|<span>`;   
     }
-    text += `\nPlayer B's detrsoyed figures: `;
+    text += `<p class='endGameStatistics'>Player B's destroyed figures</p>`;
     for (let index = 0; index < Game.destroyedPlayerBFigures.length; index++) {
-        text += `${Game.destroyedPlayerAFigures[index].name}|`;        
+        if (index == Game.destroyedPlayerBFigures.length - 1) {
+            text += `<span>${Game.destroyedPlayerBFigures[index].name}<span>`;
+            break;
+        }
+        text += `<span>${Game.destroyedPlayerBFigures[index].name}|<span>`;        
     }
+    statistics.style["height"] = "300px";
     statistics.innerHTML = text;
 };
 

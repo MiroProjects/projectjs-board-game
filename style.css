@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=ZCOOL+QingKe+HuangYou');
 body{
     background-color: rgba(249, 249, 235, 0.9);
     margin: 0;
@@ -18,10 +19,12 @@ ul>li{
     margin: 17px 0 17px 0;
     background-color: red;
     width: 250px;
+    padding: 3px;
+    color: white;
 }
 
 div#canvasContainer{
-    position: relative;
+    position: absolute;
 }
 
 div#infoContainer{
@@ -44,14 +47,55 @@ canvas#figureField{
     z-index: 2;
 }
 
+#infoContainer{
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
 div#statistics{
     width:400px; 
-    height:300px; 
-    border:solid red 2px; 
+    height:250px; 
     display:inline-block;
     vertical-align: top;
     margin-left: 100px;
     text-align: center;
     font-size: 40px;
-    padding: 30px 0 30px 0; 
+    padding: 70px 0 30px 0;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    background-color: white;
+}
+
+div#title{
+    width: 430px;
+    height: 50px;
+    padding: 5px;
+    position: relative;
+    top: 30px;
+    left: 80px;
+    font-size: 40px;
+    text-align: center;
+    background-color: rgb(65, 153, 241);
+    color: white;
+    box-shadow: 0 10px 6px -6px #777;
+}
+
+p.endGameStatistics{
+    margin: 0;
+}
+
+#startGame{
+    position: relative;
+    top: 70px;
+    left: 210px;
+    padding: 15px 25px;
+    font-size: 25px;
+    text-align: center;
+    color: #fff;
+    background-color: rgb(65, 153, 241);
+    border: none;
+    box-shadow: 0 10px 6px -6px #777;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+#startGame:hover {
+    background-color: rgb(18, 128, 237);
+    cursor: pointer;
 }

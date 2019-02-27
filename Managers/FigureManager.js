@@ -49,3 +49,12 @@ FigureManager.setObstacle = function(square){
     this.context.rect(square.x, square.y, square.width, square.height);
     this.context.fill();
 };
+
+//Sets color for selected figure
+FigureManager.changeSelectedSquareColor = function(square){
+    this.context.fillStyle = "rgba(65, 153, 241, 0.5)";
+    this.context.beginPath();
+    this.context.rect(square.x, square.y, square.width, square.height);
+    this.context.fill();
+    this.context.fillStyle = "black";
+};
