@@ -22,7 +22,7 @@ Game.initialize = function () {
 
 //Functions to be called for the start of a new game
 Game.startGame = function(){
-    statistics.style["height"] = "250px";
+    statistics.style["height"] = "330px";
     FigureManager.removeClickFunction();
     GameFieldManager.reset();
     FigureManager.clear();
@@ -153,6 +153,11 @@ var changeStatisticsOnDistribution = function(player){
     for (let index = 0; index < player.heros.length; index++) {
         text += ` ${player.heros[index].name} `;     
     }
+    text += "<div class='statisticsDistribution'>"
+    text += "<p class='statisticsDistribution'>K/K' - Knight</p>";
+    text += "<p class='statisticsDistribution'>E/E' - Elf</p>";
+    text += "<p class='statisticsDistribution'>D/D' - Dwarf</p>";
+    text += "</div>";
 
     statistics.innerHTML = text;
 };

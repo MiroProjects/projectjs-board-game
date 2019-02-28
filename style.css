@@ -52,7 +52,7 @@ canvas#figureField{
 }
 div#statistics{
     width:400px; 
-    height:250px; 
+    height:330px; 
     display:inline-block;
     vertical-align: top;
     margin-left: 100px;
@@ -83,7 +83,7 @@ p.endGameStatistics{
 
 #startGame{
     position: relative;
-    top: 70px;
+    top: 50px;
     left: 210px;
     padding: 15px 25px;
     font-size: 25px;
@@ -98,4 +98,16 @@ p.endGameStatistics{
 #startGame:hover {
     background-color: rgb(18, 128, 237);
     cursor: pointer;
+}
+
+p.statisticsDistribution{
+    margin: 0;
+}
+
+div.statisticsDistribution{
+    background-color: rgba(216,216,216, 0.5);
+    margin-top: 25px;
+    width: 350px;
+    margin-left: 25px;
+    border-radius: 5px;
 }
