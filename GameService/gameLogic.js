@@ -627,6 +627,7 @@ var calcPoints = function(){
 //Changes tha statistics for the end of the game
 var endOfGameStatistics = function(){
     var text = "";
+    text += `<p class='endGameStatistics'>Congratulations ${Game.currentPlayer.name}</p>`;
     text += `<p class='endGameStatistics'>Winner's points ${calcPoints()}</p>`;
     text += `<p class='endGameStatistics'>Game rounds ${Game.rounds}</p>`;
     text += `<p class='endGameStatistics'>Player A's destroyed figures</p>`;
@@ -645,7 +646,7 @@ var endOfGameStatistics = function(){
         }
         text += `<span>${Game.destroyedPlayerBFigures[index].name}|<span>`;        
     }
-    statistics.style["height"] = "300px";
+    statistics.style["height"] = "345px";
     statistics.innerHTML = text;
 };
 
