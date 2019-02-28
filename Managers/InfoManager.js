@@ -63,14 +63,14 @@ InfoManager.addOnClickEvent = function(callback){
 };
 
 //Function that sets the style for the info squares when a figure performs a move
-InfoManager.setStyleForMovesSquares = function(){
-    this.context.fillStyle = "rgba(255, 255, 255, 0.7)";
+var setStyleForMovesSquares = function(){
+    InfoManager.context.fillStyle = "rgba(255, 255, 255, 0.7)";
     InfoManager.context.font = "50px Arial";
 };
 
 //Information for the info squares for the moves
 InfoManager.addMoveInfo = function(square){
-    this.setStyleForMovesSquares();
+    setStyleForMovesSquares();
     InfoManager.context.beginPath();
     InfoManager.context.rect(square.x, square.y, 85, 85);
     InfoManager.context.fill();

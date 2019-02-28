@@ -16,6 +16,7 @@ Game.initialize = function () {
     this.statistics = document.getElementById("statistics");
     this.createGameField();
     Game.rounds = 0;
+    //Two arrays for holding the order of the destroyed figures
     Game.destroyedPlayerAFigures = [];
     Game.destroyedPlayerBFigures = [];
 };
@@ -84,7 +85,7 @@ var playerBCharacteristics = function(){
         Figures.getNewDwarf(), Figures.getNewDwarf(), 
         Figures.getNewElf(), Figures.getNewElf()];
 
-    //Add " ' " to the heroes' names so they are be different
+    //Add " ' " to the heroes' names so they are different
     for (let index = 0; index < Game.playerB.heros.length; index++) {
         Game.playerB.heros[index].name += '\'';
     }
@@ -269,7 +270,7 @@ var getAFreeRandomPosition = function(positions){
     return position;
 };
 
-//Generate obstacles
+//Generatse obstacles
 var generateObstacles = function(){
     var positions = [];
 
@@ -295,7 +296,7 @@ var makeChoice = function (playerChoice) {
     Game.currentPlayer.choice = playerChoice;
 };
 
-//Add <li> click options
+//Adds to the HTML elemnts <li> click options
 var addOptions = function(){
     var optionAttack = document.getElementById("attack");
     var optionMove = document.getElementById("move");
@@ -352,7 +353,7 @@ var gamePlay = function(e) {
     }
 };
 
-//Perform a move
+//Performs a move
 var makeMove = function(e){
     var position = {
         x: e.clientX,
@@ -412,7 +413,7 @@ var healAFigure = function () {
     resetGameBoardForNextPlayer();
 };
 
-//Perform an attack
+//Performs an attack
 var makeAttack = function(e) {
     var position = {
         x: e.clientX,
@@ -437,7 +438,7 @@ var makeAttack = function(e) {
             if (((distanceWidth == distance) && (distanceHeight == 0)) || 
             ((distanceHeight == distance) && (distanceWidth == 0))) {
                 
-                //If it is on ots diagonal then an attack cannot be performed
+                //If it is on its diagonal then an attack cannot be performed
                 if (excludeDiagonalAttack(square)) {
                     alert("The figure cannot attack from this position!");
                     break;
@@ -449,7 +450,7 @@ var makeAttack = function(e) {
                     break;
                 }
 
-                //If the figures are your then you cannot make the attack
+                //If the figures are yours then you cannot make the attack
                 if (square.figure.player == Game.currentPlayer) {
                     alert("You cannot attack your figures!");
                     break;
@@ -466,6 +467,7 @@ var makeAttack = function(e) {
                     break;
                 }
 
+                //Calc the attack
                 var attack =  Game.clickedSquare.figure.attack - square.figure.armor;
                 if (diceSum == 3) {
                     var attack = Math.round(attack / 2);
@@ -477,6 +479,7 @@ var makeAttack = function(e) {
                 }
 
                 alert(`Player: ${Game.currentPlayer.name} attacked the figure: ${square.figure.name} with ${Game.clickedSquare.figure.name} and the figure lost ${attack} points. Left health: ${square.figure.health}`);
+                //If figure is destroyed
                 if (square.figure.health <= 0) {
                     if (Game.currentPlayer == Game.playerA) {
                         Game.destroyedPlayerBFigures.push(square.figure);
@@ -487,6 +490,7 @@ var makeAttack = function(e) {
                     square.figure = null;
                 }
                 
+                //If it is the last figure of one of the players
                 if (isEndOfGame()) {
                     alert("This is the end of the game");
                     resetFigureField();
@@ -506,7 +510,7 @@ var makeAttack = function(e) {
     resetGameBoardForNextPlayer();
 };
 
-//Reset all the figure manager field
+//Resets the figure manager field for the next turn
 var resetFigureField = function(){
     FigureManager.clear();
     var boardSquares = GameFieldManager.arrayWithSquares;
@@ -608,7 +612,7 @@ Game.clickEventGamePlay = function(){
     FigureManager.addOnClickEvent();
 };
 
-//Calculate the points of the winner based on the health of his alive heroes
+//Calculates the points of the winner based on the health of his alive heroes
 var calcPoints = function(){
     boardSquares = GameFieldManager.arrayWithSquares;
     var points = 0
@@ -620,7 +624,7 @@ var calcPoints = function(){
     return points;
 };
 
-//Change tha statistics for the end of the game
+//Changes tha statistics for the end of the game
 var endOfGameStatistics = function(){
     var text = "";
     text += `<p class='endGameStatistics'>Winner's points ${calcPoints()}</p>`;
@@ -645,7 +649,7 @@ var endOfGameStatistics = function(){
     statistics.innerHTML = text;
 };
 
-//Checks for end of the game
+//Checks for the end of the game
 var isEndOfGame = function(){
     var boardSquares = GameFieldManager.arrayWithSquares;
     var isPlayerAAlive = false;
